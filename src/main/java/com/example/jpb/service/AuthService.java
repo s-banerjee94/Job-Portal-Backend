@@ -14,23 +14,21 @@ import com.example.jpb.repository.CandidateRepository;
 import com.example.jpb.repository.RecruiterRepository;
 import com.example.jpb.repository.UserRepository;
 import com.example.jpb.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private CandidateRepository candidateRepository;
+    private final CandidateRepository candidateRepository;
+    private final RecruiterRepository recruiterRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private RecruiterRepository recruiterRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JwtUtil jwtUtil;
 
     public void registerCandidate(CandidateRegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -40,7 +38,7 @@ public class AuthService {
         Candidate candidate = new Candidate();
         candidate.setEmail(request.getEmail());
         candidate.setName(request.getName());
-        candidate.setPassword(request.getPassword());
+        candidate.setPassword(passwordEncoder.encode(request.getPassword()));
 
         candidateRepository.save(candidate);
     }
@@ -54,7 +52,7 @@ public class AuthService {
         recruiter.setName(request.getName());
         recruiter.setCompany(request.getCompany());
         recruiter.setEmail(request.getEmail());
-        recruiter.setPassword(request.getPassword());
+        recruiter.setPassword(passwordEncoder.encode(request.getPassword()));
         recruiter.setLocation(request.getLocation());
 
         recruiterRepository.save(recruiter);
@@ -64,7 +62,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
-        if (!request.getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidPasswordException();
         }
 
