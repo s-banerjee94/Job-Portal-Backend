@@ -20,3 +20,8 @@ spring:
 server:
   port: 8080
 
+jwt:
+  secret: ${JWT_SECRET:mySecretKeyForJwtTokenGenerationAndValidationPurpose12345}
+  expiration: ${JWT_EXPIRATION:86400000}
+  issuer: ${JWT_ISSUER:job-portal-backend}
+

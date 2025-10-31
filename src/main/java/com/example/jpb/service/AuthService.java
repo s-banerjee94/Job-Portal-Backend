@@ -13,6 +13,7 @@ import com.example.jpb.model.entity.User;
 import com.example.jpb.repository.CandidateRepository;
 import com.example.jpb.repository.RecruiterRepository;
 import com.example.jpb.repository.UserRepository;
+import com.example.jpb.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public void registerCandidate(CandidateRegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -73,8 +77,10 @@ public class AuthService {
             throw new UserNotFoundException("Unknown user type");
         }
 
+        String token = jwtUtil.generateToken(user.getEmail(), role, user.getId());
+
         return AuthResponse.builder()
-                .token("temp-token-" + user.getId())
+                .token(token)
                 .tokenType("Bearer")
                 .email(user.getEmail())
                 .name(user.getName())
