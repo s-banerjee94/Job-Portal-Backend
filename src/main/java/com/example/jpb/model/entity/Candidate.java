@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Candidate extends User {
 
-    @Column(nullable = false)
+    @Column
     private Integer experience;
 
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String skills;
 }
