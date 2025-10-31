@@ -1,8 +1,10 @@
 package com.example.jpb.controller;
 
 import com.example.jpb.exception.EmailAlreadyExistsException;
+import com.example.jpb.model.dto.AuthResponse;
 import com.example.jpb.model.dto.CandidateRegisterRequest;
 import com.example.jpb.model.dto.ErrorResponse;
+import com.example.jpb.model.dto.LoginRequest;
 import com.example.jpb.model.dto.RecruiterRegisterRequest;
 import com.example.jpb.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,12 @@ public class AuthController {
     public ResponseEntity<Void> registerRecruiter(@Valid @RequestBody RecruiterRegisterRequest request) {
         authService.registerRecruiter(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)

@@ -1,10 +1,15 @@
 package com.example.jpb.service;
 
 import com.example.jpb.exception.EmailAlreadyExistsException;
+import com.example.jpb.exception.InvalidPasswordException;
+import com.example.jpb.exception.UserNotFoundException;
+import com.example.jpb.model.dto.AuthResponse;
 import com.example.jpb.model.dto.CandidateRegisterRequest;
+import com.example.jpb.model.dto.LoginRequest;
 import com.example.jpb.model.dto.RecruiterRegisterRequest;
 import com.example.jpb.model.entity.Candidate;
 import com.example.jpb.model.entity.Recruiter;
+import com.example.jpb.model.entity.User;
 import com.example.jpb.repository.CandidateRepository;
 import com.example.jpb.repository.RecruiterRepository;
 import com.example.jpb.repository.UserRepository;
@@ -49,5 +54,31 @@ public class AuthService {
         recruiter.setLocation(request.getLocation());
 
         recruiterRepository.save(recruiter);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+
+        if (!request.getPassword().equals(user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        String role;
+        if (user instanceof Candidate) {
+            role = "ROLE_CANDIDATE";
+        } else if (user instanceof Recruiter) {
+            role = "ROLE_RECRUITER";
+        } else {
+            throw new UserNotFoundException("Unknown user type");
+        }
+
+        return AuthResponse.builder()
+                .token("temp-token-" + user.getId())
+                .tokenType("Bearer")
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(role)
+                .build();
     }
 }
