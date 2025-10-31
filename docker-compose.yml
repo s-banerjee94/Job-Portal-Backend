@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: jpb-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: jobportal
+      MYSQL_USER: jpbuser
+      MYSQL_PASSWORD: jpbpass
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 3
+    networks:
+      - jpb-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jpb-app
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: jobportal
+      DB_USERNAME: jpbuser
+      DB_PASSWORD: jpbpass
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - jpb-network
+
+networks:
+  jpb-network:
+    driver: bridge

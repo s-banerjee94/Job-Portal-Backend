@@ -1,0 +1,17 @@
+target/
+!target/*.jar
+.mvn/wrapper/maven-wrapper.jar
+.git
+.gitignore
+.idea
+*.iml
+*.ipr
+*.iws
+.vscode
+.DS_Store
+README.md
+CLAUDE.md
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore
