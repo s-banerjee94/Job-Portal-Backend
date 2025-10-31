@@ -5,6 +5,7 @@ import com.example.jpb.model.dto.*;
 import com.example.jpb.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,10 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/register/candidate")
     public ResponseEntity<Void> registerCandidate(@Valid @RequestBody CandidateRegisterRequest request) {
