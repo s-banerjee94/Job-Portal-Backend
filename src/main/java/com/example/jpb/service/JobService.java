@@ -1,12 +1,18 @@
 package com.example.jpb.service;
 
+import com.example.jpb.exception.DuplicateJobApplicationException;
 import com.example.jpb.exception.JobNotFoundException;
 import com.example.jpb.exception.UserNotFoundException;
+import com.example.jpb.model.dto.JobApplicationResponse;
 import com.example.jpb.model.dto.JobRequest;
 import com.example.jpb.model.dto.JobResponse;
 import com.example.jpb.model.dto.PageResponse;
+import com.example.jpb.model.entity.Candidate;
 import com.example.jpb.model.entity.Job;
+import com.example.jpb.model.entity.JobApplication;
 import com.example.jpb.model.entity.Recruiter;
+import com.example.jpb.repository.CandidateRepository;
+import com.example.jpb.repository.JobApplicationRepository;
 import com.example.jpb.repository.JobRepository;
 import com.example.jpb.repository.RecruiterRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +34,10 @@ public class JobService {
     private final JobRepository jobRepository;
 
     private final RecruiterRepository recruiterRepository;
+
+    private final CandidateRepository candidateRepository;
+
+    private final JobApplicationRepository jobApplicationRepository;
 
     public JobResponse createJob(JobRequest jobRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -156,5 +166,36 @@ public class JobService {
                         .location(job.getLocation())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public JobApplicationResponse applyForJob(Long jobId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String candidateEmail = authentication.getName();
+
+        Candidate candidate = candidateRepository.findByEmail(candidateEmail)
+                .orElseThrow(() -> new UserNotFoundException(candidateEmail));
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new JobNotFoundException(jobId));
+
+        jobApplicationRepository.findByJobIdAndCandidateId(jobId, candidate.getId())
+                .ifPresent(existingApplication -> {
+                    throw new DuplicateJobApplicationException();
+                });
+
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setJob(job);
+        jobApplication.setCandidate(candidate);
+
+        JobApplication savedApplication = jobApplicationRepository.save(jobApplication);
+
+        return JobApplicationResponse.builder()
+                .id(savedApplication.getId())
+                .jobId(job.getId())
+                .jobTitle(job.getTitle())
+                .candidateId(candidate.getId())
+                .candidateName(candidate.getName())
+                .appliedAt(savedApplication.getAppliedAt())
+                .build();
     }
 }

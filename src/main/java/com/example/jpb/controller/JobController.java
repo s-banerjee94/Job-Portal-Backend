@@ -1,12 +1,12 @@
 package com.example.jpb.controller;
 
+import com.example.jpb.model.dto.JobApplicationResponse;
 import com.example.jpb.model.dto.JobRequest;
 import com.example.jpb.model.dto.JobResponse;
 import com.example.jpb.model.dto.PageResponse;
 import com.example.jpb.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -64,5 +64,11 @@ public class JobController {
             @RequestParam String location) {
         List<JobResponse> jobs = jobService.searchJobs(skill, location);
         return ResponseEntity.ok(jobs);
+    }
+
+    @PostMapping("/{id}/apply")
+    public ResponseEntity<JobApplicationResponse> applyForJob(@PathVariable Long id) {
+        JobApplicationResponse response = jobService.applyForJob(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
