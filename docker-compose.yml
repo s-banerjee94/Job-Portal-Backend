@@ -11,6 +11,8 @@ services:
       MYSQL_PASSWORD: jpbpass
     ports:
       - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -40,3 +42,7 @@ services:
 networks:
   jpb-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
