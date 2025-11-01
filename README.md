@@ -30,6 +30,37 @@ A REST API for a job portal where recruiters can post jobs and candidates can se
 ./mvnw clean install
 ```
 
+## Docker Setup
+
+### Run with Docker Compose
+
+The easiest way to run the application with MySQL:
+
+```bash
+docker-compose up -d
+```
+
+This will start both the MySQL database and the application. The app will be available at `http://localhost:8080`.
+
+### Stop the containers
+
+```bash
+docker-compose down
+```
+
+### Build Docker image manually
+
+```bash
+docker build -t job-portal-api .
+```
+
+### Default Database Configuration (Docker)
+
+- Database: `jobportal`
+- Username: `jpbuser`
+- Password: `jpbpass`
+- Port: `3306`
+
 ## API Endpoints
 
 ### Authentication (Public)
