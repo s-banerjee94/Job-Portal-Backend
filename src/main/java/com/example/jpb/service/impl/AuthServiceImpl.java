@@ -70,10 +70,10 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
-        // Use the role field from the User entity
         String role = user.getRole().name();
 
         String token = jwtUtil.generateToken(user.getEmail(), role, user.getId());
