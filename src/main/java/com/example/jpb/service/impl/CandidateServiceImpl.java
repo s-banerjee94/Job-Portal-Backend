@@ -8,6 +8,10 @@ import com.example.jpb.model.entity.Candidate;
 import com.example.jpb.repository.CandidateRepository;
 import com.example.jpb.service.CandidateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateRepository candidateRepository;
 
     @Override
+    @Cacheable(value = "candidateProfile", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public CandidateResponse getCandidateProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -33,6 +38,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Caching(
+            put = @CachePut(value = "candidateProfile", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()"),
+            evict = @CacheEvict(value = "user", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
+    )
     public CandidateResponse updateCandidateProfile(CandidateUpdateRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

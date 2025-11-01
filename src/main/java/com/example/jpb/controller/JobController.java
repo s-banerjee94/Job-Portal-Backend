@@ -7,6 +7,7 @@ import com.example.jpb.model.dto.PageResponse;
 import com.example.jpb.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,6 +48,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
+
     public ResponseEntity<JobResponse> getJobById(@PathVariable Long id) {
         JobResponse jobResponse = jobService.getJobById(id);
         return ResponseEntity.ok(jobResponse);

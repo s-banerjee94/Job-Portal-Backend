@@ -71,8 +71,7 @@ public class AuthServiceImpl implements AuthService {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+        User user = (User) authenticate.getPrincipal();
 
         String role = user.getRole().name();
 

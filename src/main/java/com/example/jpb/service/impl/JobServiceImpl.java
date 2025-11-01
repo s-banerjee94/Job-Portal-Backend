@@ -18,6 +18,7 @@ import com.example.jpb.repository.JobRepository;
 import com.example.jpb.repository.RecruiterRepository;
 import com.example.jpb.service.JobService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -66,8 +67,8 @@ public class JobServiceImpl implements JobService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Cacheable(value = "job", key = "#jobId")
     public JobResponse getJobById(Long jobId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new JobNotFoundException(jobId));
