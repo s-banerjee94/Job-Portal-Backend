@@ -1,6 +1,7 @@
 package com.example.jpb.service.impl;
 
 import com.example.jpb.exception.DuplicateJobApplicationException;
+import com.example.jpb.exception.InsufficientExperienceException;
 import com.example.jpb.exception.JobNotFoundException;
 import com.example.jpb.exception.UserNotFoundException;
 import com.example.jpb.model.dto.JobApplicationResponse;
@@ -185,6 +186,10 @@ public class JobServiceImpl implements JobService {
                 .ifPresent(existingApplication -> {
                     throw new DuplicateJobApplicationException();
                 });
+        if (candidate.getExperience() == null || candidate.getExperience() < job.getExperienceRequired()) {
+            throw new InsufficientExperienceException(job.getExperienceRequired(),
+                    candidate.getExperience() != null ? candidate.getExperience() : 0);
+        }
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setJob(job);
