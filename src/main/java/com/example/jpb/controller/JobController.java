@@ -57,4 +57,12 @@ public class JobController {
         List<JobResponse> jobs = jobService.getMyJobs();
         return ResponseEntity.ok(jobs);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<JobResponse>> searchJobs(
+            @RequestParam String skill,
+            @RequestParam String location) {
+        List<JobResponse> jobs = jobService.searchJobs(skill, location);
+        return ResponseEntity.ok(jobs);
+    }
 }

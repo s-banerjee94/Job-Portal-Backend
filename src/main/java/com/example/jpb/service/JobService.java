@@ -141,4 +141,20 @@ public class JobService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<JobResponse> searchJobs(String skill, String location) {
+        List<Job> jobs = jobRepository.findByRequiredSkillsContainingIgnoreCaseOrLocationContainingIgnoreCase(skill, location);
+
+        return jobs.stream()
+                .map(job -> JobResponse.builder()
+                        .id(job.getId())
+                        .title(job.getTitle())
+                        .description(job.getDescription())
+                        .requiredSkills(job.getRequiredSkills())
+                        .experienceRequired(job.getExperienceRequired())
+                        .location(job.getLocation())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

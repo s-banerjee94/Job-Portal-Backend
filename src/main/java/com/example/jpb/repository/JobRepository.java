@@ -11,4 +11,6 @@ import java.util.List;
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findByPostedBy(Recruiter recruiter);
+
+    List<Job> findByRequiredSkillsContainingIgnoreCaseOrLocationContainingIgnoreCase(String skill, String location);
 }
