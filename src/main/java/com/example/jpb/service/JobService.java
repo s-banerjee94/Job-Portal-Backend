@@ -119,4 +119,26 @@ public class JobService {
                 .first(jobPage.isFirst())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public List<JobResponse> getMyJobs() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String recruiterEmail = authentication.getName();
+
+        Recruiter recruiter = recruiterRepository.findByEmail(recruiterEmail)
+                .orElseThrow(() -> new UserNotFoundException(recruiterEmail));
+
+        List<Job> jobs = jobRepository.findByPostedBy(recruiter);
+
+        return jobs.stream()
+                .map(job -> JobResponse.builder()
+                        .id(job.getId())
+                        .title(job.getTitle())
+                        .description(job.getDescription())
+                        .requiredSkills(job.getRequiredSkills())
+                        .experienceRequired(job.getExperienceRequired())
+                        .location(job.getLocation())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/jobs")
 @RequiredArgsConstructor
@@ -48,5 +50,11 @@ public class JobController {
     public ResponseEntity<JobResponse> getJobById(@PathVariable Long id) {
         JobResponse jobResponse = jobService.getJobById(id);
         return ResponseEntity.ok(jobResponse);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<JobResponse>> getMyJobs() {
+        List<JobResponse> jobs = jobService.getMyJobs();
+        return ResponseEntity.ok(jobs);
     }
 }
