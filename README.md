@@ -6,10 +6,13 @@ A REST API for a job portal where recruiters can post jobs and candidates can se
 
 - Java 17
 - Spring Boot 3.5.7
-- Spring Security with JWT
-- Spring Data JPA
-- MySQL
+- Spring Security with JWT authentication
+- Spring Data JPA with Hibernate
+- Spring Cache (in-memory caching)
+- MySQL 8.0
 - Maven
+- Swagger/OpenAPI 3.0 (Springdoc)
+- Lombok
 
 ## Getting Started
 
@@ -69,13 +72,13 @@ docker build -t job-portal-api .
 - `POST /api/auth/login` - Login and get JWT token
 
 ### Jobs (Public)
-- `GET /api/jobs` - List all jobs
+- `GET /api/jobs` - List all jobs (supports pagination)
 - `GET /api/jobs/{id}` - Get job details
 - `GET /api/jobs/search?skill=...&location=...` - Search jobs
 
 ### Candidates (Requires ROLE_CANDIDATE)
 - `GET /api/candidates/profile` - Get profile
-- `PUT /api/candidates/profile` - Update profile
+- `PATCH /api/candidates/profile` - Update profile
 - `POST /api/jobs/{id}/apply` - Apply to job
 
 ### Recruiters (Requires ROLE_RECRUITER)
@@ -90,11 +93,24 @@ Protected endpoints require a JWT token in the Authorization header:
 Authorization: Bearer <your-jwt-token>
 ```
 
+## Features
+
+- **Caching** - User authentication, candidate profiles, and job details are cached for better performance
+- **Role-Based Access** - Separate permissions for candidates and recruiters
+- **Experience Validation** - Automatic validation of minimum experience requirements when applying
+- **Pagination** - Job listings support pagination and sorting
+- **API Documentation** - Interactive Swagger UI available at `/swagger-ui/`
+
 ## Configuration
 
-Update `application.properties` with your MySQL credentials:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/your_database
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+Update `application.yaml` or use environment variables:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:jobportal}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
 ```
+
+For Docker deployments, set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, and `DB_PASSWORD` as needed.
