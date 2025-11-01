@@ -55,17 +55,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register/recruiter").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
 
-                        // Public endpoints - Job viewing (GET only)
-                        .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/jobs/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/jobs/search").permitAll()
-
-                        // Recruiter-only endpoints
+                        // Recruiter-only endpoints (must come BEFORE /api/jobs/{id} pattern)
+                        .requestMatchers("/api/jobs/mine").hasRole("RECRUITER")
+                        .requestMatchers("/api/applications/**").hasRole("RECRUITER")
                         .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("RECRUITER")
                         .requestMatchers(HttpMethod.PUT, "/api/jobs/**").hasRole("RECRUITER")
                         .requestMatchers(HttpMethod.DELETE, "/api/jobs/**").hasRole("RECRUITER")
-                        .requestMatchers("/api/jobs/mine").hasRole("RECRUITER")
-                        .requestMatchers("/api/applications/**").hasRole("RECRUITER")
+
+                        // Public endpoints - Job viewing (GET only)
+                        .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/{id}").permitAll()
 
                         // Candidate-only endpoints
                         .requestMatchers("/api/candidates/**").hasRole("CANDIDATE")

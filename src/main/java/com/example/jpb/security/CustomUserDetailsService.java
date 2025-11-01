@@ -36,12 +36,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // Determine role based on user type
-        String role = user.getClass().getSimpleName().equals("Candidate")
-                ? "ROLE_CANDIDATE"
-                : "ROLE_RECRUITER";
-
-        authorities.add(new SimpleGrantedAuthority(role));
+        // Use the role field from the User entity
+        authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
         return authorities;
     }
 }

@@ -28,4 +28,8 @@ public abstract class User {
 
     @Column
     private String location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 }

@@ -8,6 +8,7 @@ import com.example.jpb.model.dto.LoginRequest;
 import com.example.jpb.model.dto.RecruiterRegisterRequest;
 import com.example.jpb.model.entity.Candidate;
 import com.example.jpb.model.entity.Recruiter;
+import com.example.jpb.model.entity.Role;
 import com.example.jpb.model.entity.User;
 import com.example.jpb.repository.CandidateRepository;
 import com.example.jpb.repository.RecruiterRepository;
@@ -43,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
         candidate.setEmail(request.getEmail());
         candidate.setName(request.getName());
         candidate.setPassword(passwordEncoder.encode(request.getPassword()));
+        candidate.setRole(Role.ROLE_CANDIDATE);
 
         candidateRepository.save(candidate);
     }
@@ -59,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
         recruiter.setEmail(request.getEmail());
         recruiter.setPassword(passwordEncoder.encode(request.getPassword()));
         recruiter.setLocation(request.getLocation());
+        recruiter.setRole(Role.ROLE_RECRUITER);
 
         recruiterRepository.save(recruiter);
     }
@@ -70,15 +73,8 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
-
-        String role;
-        if (user instanceof Candidate) {
-            role = "ROLE_CANDIDATE";
-        } else if (user instanceof Recruiter) {
-            role = "ROLE_RECRUITER";
-        } else {
-            throw new UserNotFoundException("Unknown user type");
-        }
+        // Use the role field from the User entity
+        String role = user.getRole().name();
 
         String token = jwtUtil.generateToken(user.getEmail(), role, user.getId());
 
